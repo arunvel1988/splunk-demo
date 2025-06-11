@@ -1,0 +1,88 @@
+
+##############################################################################
+# Top 404 (Not Found) URLs
+  
+index=* sourcetype=nginx:access
+| rex "\s(?<status>\d{3})\s"
+| search status=404
+| rex "\"\w+\s(?<url>[^\s]+)"
+| top url limit=10
+
+
+##############################################################################
+# Top 5xx Error URLs (Server Errors)
+
+index=* sourcetype=nginx:access
+| rex "\s(?<status>\d{3})\s"
+| search status>=500 status<600
+| rex "\"\w+\s(?<url>[^\s]+)"
+| stats count by url status
+| sort - count
+
+##############################################################################
+
+# HTTP Status Breakdown Over Time
+
+ index=* sourcetype=nginx:access
+| rex "\s(?<status>\d{3})\s"
+| timechart span=1m count by status 
+
+##############################################################################
+#  Slowest Requests (by response size as proxy)
+
+index=* sourcetype=nginx:access
+| rex "\"\w+\s(?<url>[^\s]+).*\"\s(?<status>\d{3})\s(?<bytes>\d+)"
+| stats avg(bytes) as avg_bytes count by url
+| sort - avg_bytes
+| head 10
+
+##############################################################################
+#  Top User Agents Causing Errors
+index=* sourcetype=nginx:access
+| rex "\"[^\"]+\"\s(?<status>\d{3})\s\d+\s\"[^\"]*\"\s\"(?<useragent>[^\"]+)"
+| search status>=400
+| top useragent limit=10
+
+
+##############################################################################
+# Blocked by HTTP 405 (Method Not Allowed)
+index=* sourcetype=nginx:access
+| rex "\"(?<method>\w+)\s(?<url>[^\s]+).*\"\s(?<status>\d{3})\s"
+| search status=405
+| stats count by method, url
+| sort - count
+
+##############################################################################
+# Spike Detection (Error Rate Over Time)
+index=* sourcetype=nginx:access
+| rex "\s(?<status>\d{3})\s"
+| eval error=if(status >= 400, 1, 0)
+| timechart span=1m count as total_errors sum(error) as error_count
+| eval error_rate=round((error_count/total_errors)*100, 2)
+
+
+##############################################################################
+# Access Volume by Country (if GeoIP enabled)
+index=* sourcetype=nginx:access
+| iplocation clientip
+| top Country limit=10
+
+##############################################################################
+# GET vs POST Ratio Over Time
+index=* sourcetype=nginx:access
+| rex "\"(?<method>GET|POST|PUT|DELETE|HEAD|OPTIONS)"
+| timechart span=1m count by method
+
+
+##############################################################################
+# Top Referrers (External Traffic Sources)
+
+index=* sourcetype=nginx:access
+| rex "\"[^\"]+\"\s\d+\s\d+\s\"(?<referrer>[^\"]+)\""
+| top referrer limit=10
+
+  
+##############################################################################
+
+
+  
