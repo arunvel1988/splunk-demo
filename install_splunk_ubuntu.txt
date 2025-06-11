@@ -1,4 +1,4 @@
-SPLUNK SERVER INSTALLATION STEPS
+# SPLUNK SERVER INSTALLATION STEPS
 
 wget -O splunk-9.4.3-237ebbd22314-linux-amd64.deb "https://download.splunk.com/products/splunk/releases/9.4.3/linux/splunk-9.4.3-237ebbd22314-linux-amd64.deb"
 
@@ -10,9 +10,15 @@ sudo /opt/splunk/bin/splunk start --accept-license
 sudo apt install nginx -y
 
 
-SPLUNK FORWARDER INSTALLATION STEPS
+# SPLUNK FORWARDER INSTALLATION STEPS
 wget -O splunkforwarder-9.4.3-237ebbd22314-linux-amd64.deb "https://download.splunk.com/products/universalforwarder/releases/9.4.3/linux/splunkforwarder-9.4.3-237ebbd22314-linux-amd64.deb"
 
 sudo dpkg -i splunkforwarder-9.4.3-237ebbd22314-linux-amd64.deb
 
 sudo /opt/splunkforwarder/bin/splunk start --accept-license
+
+sudo /opt/splunkforwarder/bin/splunk status
+
+sudo /opt/splunkforwarder/bin/splunk list forward-server
+
+sudo /opt/splunkforwarder/bin/splunk add forward-server 127.0.0.1:9997 -auth admin:
