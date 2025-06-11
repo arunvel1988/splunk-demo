@@ -85,4 +85,9 @@ whitelist.0 = *
 ###################################################################################
 sudo /opt/splunk/bin/splunk restart
 
+##################################################################################################
+
+sudo /opt/splunkforwarder/bin/splunk set deploy-poll <DEPLOYMENT_SERVER_IP>:8089
+sudo /opt/splunkforwarder/bin/splunk restart
+
 
