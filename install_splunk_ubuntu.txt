@@ -46,8 +46,43 @@ index=* sourcetype="nginx:access"
 index=* sourcetype="nginx:error"
 
 
+##########################################################################################################
+########################################################################################################
+
+# splunk deployment server
+
+sudo mkdir -p /opt/splunk/etc/deployment-apps/log-monitor/local
+
+sudo nano /opt/splunk/etc/deployment-apps/log-monitor/local/inputs.conf
+
+# Monitor syslog
+[monitor:///var/log/syslog]
+sourcetype = syslog
+
+# Monitor custom test log
+[monitor:///var/log/test.log]
+sourcetype = testlog
+
+# Monitor Nginx Access Log
+[monitor:///var/log/nginx/access.log]
+sourcetype = nginx:access
+
+# Monitor Nginx Error Log
+[monitor:///var/log/nginx/error.log]
+sourcetype = nginx:error
+
+###################################################################################
+
+sudo nano /opt/splunk/etc/system/local/serverclass.conf
 
 
 
+[serverClass:log-monitor-class]
+whitelist.0 = *
+
+[serverClass:log-monitor-class:app:log-monitor]
+
+###################################################################################
+sudo /opt/splunk/bin/splunk restart
 
 
