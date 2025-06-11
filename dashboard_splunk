@@ -1,0 +1,26 @@
+#########################################
+http status break down
+
+index=* sourcetype=nginx:access
+| rex "\s(?<status>\d{3})\s\d+\s\""
+| stats count by status
+| sort - count
+
+#########################################
+TOP 10 URLS
+  
+index=* sourcetype=nginx:access
+| rex "\"\w+\s(?<url>[^\s]+)"
+| top url limit=10
+
+#########################################
+
+
+CLIENT IP 
+
+index=* sourcetype=nginx:access
+| rex "^(?<clientip>\d+\.\d+\.\d+\.\d+)"
+| top clientip
+
+#########################################
+
