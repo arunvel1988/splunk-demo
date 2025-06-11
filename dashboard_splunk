@@ -23,4 +23,16 @@ index=* sourcetype=nginx:access
 | top clientip
 
 #########################################
+Request Methods (GET, POST, etc.)
 
+index=* sourcetype=nginx:access
+| rex "\"(?<method>GET|POST|PUT|DELETE|HEAD|OPTIONS)"
+| stats count by method
+#########################################
+USER AGENT
+
+index=* sourcetype=nginx:access
+| rex "\"[^\"]+\"\s\d+\s\d+\s\"[^\"]*\"\s\"(?<useragent>[^\"]+)"
+| top useragent
+
+#########################################
